@@ -115,20 +115,20 @@ module.exports = {
   //remove a reaction
   async removeReaction(req, res) {
     try {
-    const thought = await Thought.findOneAndUpdate(
-      { _id: req.params.thoughtId },
-      { $pull: { reactions: { reactionId: req.params.reactionId } } },
-      { new: true }
-    );
+      const thought = await Thought.findByIdAndUpdate(
+        req.params.thoughtId,
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { new: true }
+      );
   // Check if the thought was found and updated
   if (!thought) {
     return res.status(404).json({ message: 'No thought with this id!' });
   }
-
-  // Return the updated thought
-  res.json(thought);
+  const updatedThought = await Thought.findById(req.params.thoughtId);
+  res.json(updatedThought);
 } catch (err) {
-  res.status(500).json(err);
+  console.error('Error removing reaction:', err);
+  res.status(500).json({ message: 'Server error', error: err });
 }
 },
 };
